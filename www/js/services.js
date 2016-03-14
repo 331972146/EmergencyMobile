@@ -126,6 +126,7 @@ return{
         GetPatientVisitInfo: {method:'GET',params:{route: 'GetPatientVisitInfo', strPatientID:'@strPatientID',strVisitNo:'@strVisitNo'}, timeout:10000},
         SetPsPatientVisitInfo: {method:'POST',params:{route: 'SetPsPatientVisitInfo'}, timeout:10000},
         UpdateTriage: {method:'POST', params:{route:'UpdateTriage'}, timeout:10000},
+        UpdateArrive: {method:'POST', params:{route:'UpdateArrive'}, timeout:10000},
       });
   };
   var VitalSignInfo = function(){
@@ -430,6 +431,15 @@ return{
   self.UpdateTriage = function(PatientID, VisitNo, Status, TriageDateTime, TriageToDept){
     var deferred = $q.defer();
     Data.PatientVisitInfo.UpdateTriage({PatientID:PatientID, VisitNo:VisitNo, Status:Status, TriageDateTime:TriageDateTime, TriageToDept:TriageToDept, UserID:'', TerminalName:'', TerminalIP:''}, function(data, headers){
+      deferred.resolve(data);
+    }, function(err){
+      deferred.reject(err);
+    });
+    return deferred.promise;
+  };
+  self.UpdateArrive = function(PatientID, VisitNo, Status, ArriveDateTime, ArrivePlace){
+    var deferred = $q.defer();
+    Data.PatientVisitInfo.UpdateArrive({PatientID:PatientID, VisitNo:VisitNo, Status:Status, ArriveDateTime:ArriveDateTime, ArrivePlace:ArrivePlace, UserID:'', TerminalName:'', TerminalIP:''}, function(data, headers){
       deferred.resolve(data);
     }, function(err){
       deferred.reject(err);
