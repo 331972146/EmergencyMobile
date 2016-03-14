@@ -11,6 +11,10 @@
                         {
                             "xml": "<feature name=\"BLE\"><param name=\"android-package\" value=\"com.megster.cordova.ble.central.BLECentralPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BluetoothSerial\"><param name=\"android-package\" value=\"com.megster.cordova.BluetoothSerial\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/*": [
@@ -42,11 +46,11 @@
                     "/manifest": [
                         {
                             "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />",
-                            "count": 1
+                            "count": 2
                         }
                     ]
                 }
@@ -73,6 +77,9 @@
             "PACKAGE_NAME": "com.ionicframework.emergencymobile950880"
         },
         "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.ionicframework.emergencymobile950880"
+        },
+        "cordova-plugin-bluetooth-serial": {
             "PACKAGE_NAME": "com.ionicframework.emergencymobile950880"
         }
     },
