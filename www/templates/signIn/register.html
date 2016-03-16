@@ -26,6 +26,15 @@
           <span class="input-label" style="width:80px">姓名</span>
           <input type="text" ng-model="register.UserName" placeholder="请填写真实姓名">
         </label>
+        <label  class="item item-input item-select">
+        <div class="input-label">角色</div>
+        <select ng-model="register.role">
+          <option value="">请选择</option>
+          <option>急救人员</option>
+          <option>分流人员</option>
+          <option>分流组长</option>
+        </select>
+        </label>    
         <div class="item" style="background-color: #EFEFD0;padding:6px 0 3px 0;font-style: italic;font-size:0.9em">以下项目非必填</div>
 <!--       <label  class="item item-input item-select">
         <div class="input-label">性别</div>
@@ -35,15 +44,7 @@
           <option>男</option>
         </select>
       </label> -->      
-      <label  class="item item-input item-select">
-        <div class="input-label">角色</div>
-        <select ng-model="register.role">
-          <option value="">请选择</option>
-          <option>急救人员</option>
-          <option>分流人员</option>
-          <option>分流组长</option>
-        </select>
-      </label>             
+               
  <!--      <a class="item">
         <div>
           <span>角色</span><span class="item-note">role{{role}}</span>

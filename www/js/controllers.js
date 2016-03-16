@@ -495,19 +495,6 @@ angular.module('controllers', ['ionic','ngResource','services'])
     $ionicHistory.goBack();
   }; 
 
-  $scope.nextStep = function(GetPatientsbyStatus){
-      if(Storage.get("PatientID")=="")
-      {
-        $ionicLoading.show({
-          template: "未新建病人ID，不能继续U",
-          noBackdrop: true,
-          duration: 1000,
-        });
-      }
-    else  $state.go('newVisit');
-  }
-
-  
   var GetDefault =function(){    
     Storage.set("PatientID","");  
     Storage.set("VisitNo","");
@@ -578,7 +565,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
       promise_CheckPatientID.then(function(data)
        { 
           if(data.result=="病人Id不存在"){
-             showConfirm();
+             //showConfirm();
+             setPatientInfo();
           }
           else{
             $ionicLoading.show({
@@ -593,66 +581,69 @@ angular.module('controllers', ['ionic','ngResource','services'])
   }  
 
    $scope.BasicInfo={}; //提交的容器初始化
-   //新建患者确认框
-   var showConfirm = function() {
-      $scope.confirmPopup = $ionicPopup.confirm({
-         title: '确认提交?',
-         template: '您新建患者的PID是  '+$scope.NewPatientID.PatientID,
-         scope: $scope,
-         buttons: [
-            {text: '提交',
-             type: 'button-assertive',
-           　onTap: function(e) {
-               sendData = {
-                "PatientID": $scope.NewPatientID.PatientID,
-                "PatientName": $scope.BasicInfo.PatientName,
-                "Gender":  $scope.BasicInfo.Gender,
-                "Age": $scope.BasicInfo.Age,
-                "DOB": $scope.BasicInfo.DOB,
-                "BloodType": $scope.BasicInfo.BloodType,
-                "Allergy": $scope.BasicInfo.Allergy,
-                "ImageID": $scope.BasicInfo.ImageID,
-                "TroopType": $scope.BasicInfo.Troop,
-                "Job": $scope.BasicInfo.JOB,
-                "Rank": $scope.BasicInfo.Rank,
-                'UserID':'',
-                'TerminalName':"",
-                "TerminalIP": ""
-              }
-            var promise =  PatientInfo.SetPatientInfo(sendData);
-            promise.then(function(data){ 
-                  if(data.result=="数据插入成功"){
-                    //console.log($scope.NewPatientID.PatientID);
-                    Storage.set("PatientID", $scope.NewPatientID.PatientID); //Storage存入PatientID
-                    $ionicLoading.show({
-                       template: "保存成功",
-                       noBackdrop: true,
-                      duration: 1000,
-                    });
-                  }//if end 
-                },function(err) {  
-                   $ionicLoading.show({
-                     template:"保存失败" , //err.data.result
-                     noBackdrop: false,
-                     duration: 1000,
-                     hideOnStateChange: true
-                   }); 
-            }); //promise end
-          } //onTap end
-        },{
-            text: '<b>取消</b>',
-            type: 'button-positive',
-         }]
-      });
+   //患者基本信息插入
+   var setPatientInfo = function() {
+      var sendData = {
+          "PatientID": $scope.NewPatientID.PatientID,
+          "PatientName": $scope.BasicInfo.PatientName,
+          "Gender":  $scope.BasicInfo.Gender,
+          "Age": $scope.BasicInfo.Age,
+          "DOB": $scope.BasicInfo.DOB,
+          "BloodType": $scope.BasicInfo.BloodType,
+          "Allergy": $scope.BasicInfo.Allergy,
+          "ImageID": $scope.BasicInfo.ImageID,
+          "TroopType": $scope.BasicInfo.Troop,
+          "Job": $scope.BasicInfo.JOB,
+          "Rank": $scope.BasicInfo.Rank,
+          'UserID':'',
+          'TerminalName':"",
+          "TerminalIP": ""
+        }
+      var promise =  PatientInfo.SetPatientInfo(sendData);
+      promise.then(function(data){ 
+            if(data.result=="数据插入成功"){
+              //console.log($scope.NewPatientID.PatientID);
+              Storage.set("PatientID", $scope.NewPatientID.PatientID); //Storage存入PatientID
+              $ionicLoading.show({
+                 template: "保存PatientID成功",
+                 noBackdrop: true,
+                duration: 1000,
+              });
+              $state.go('newVisit');
+            }//if end 
+          },function(err) {  
+             $ionicLoading.show({
+               template:"保存PatientID失败" , //err.data.result
+               noBackdrop: false,
+               duration: 1000,
+               hideOnStateChange: true
+             }); 
+      }); //promise end
    }
-                   
+                  
 }])
 
 //新建VID
 .controller('NewVisitCtrl', ['$scope', '$ionicHistory', '$http','$ionicPopup' ,'PatientVisitInfo', '$ionicLoading','MstType','Storage','PatientInfo', 'Common', function ($scope, $ionicHistory,$http,$ionicPopup,PatientVisitInfo, $ionicLoading,MstType,Storage, PatientInfo, Common) {
 
+  //写入信息
+  $scope.wirteToCard = function(){
+    $rootScope.NFCmodefy=true;
+    var type = "text/pg",
+        pid = ''+"|"+'',
+        payload = nfc.stringToBytes("fdsf"),
+        record = ndef.record(ndef.TNF_MIME_MEDIA, type, pid, payload);
+    $rootScope.recordToWrite=record;
+    $ionicLoading.show({template:'请将手机靠近NFC卡片'});
+  }
+
   $scope.goBack = function() {
     $ionicHistory.goBack();
+  };
+
+  $scope.goInjury = function() {
+    $scope.saveVisitInfo();
+     Storage.set("New", 1);
   };
   
   //获取推荐VID
@@ -686,17 +677,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
   $scope.visitInfo={"InjuryArea": "", "InjuryDateTime": new Date(Common.DateTimeNow().fullTime), "VisitDateTime": new Date(Common.DateTimeNow().fullTime)};
 
   //保存确认框
-  $scope.showConfirm = function() {
-  
-    $scope.confirmPopup = $ionicPopup.confirm({
-           title: '确认提交?',
-           template: '请确认就诊编号为'+$scope.NewVisitNo.VisitNo,
-           scope: $scope,
-           buttons: [
-              {text: '提交',
-               type: 'button-assertive',
-             　onTap: function(e) {
-                 var sendData = {
+  $scope.saveVisitInfo = function() {
+    var sendData = {
                   "PatientID": Storage.get("PatientID"),
                   "VisitNo":  $scope.NewVisitNo.VisitNo,
                   "Status": "1",
@@ -726,31 +708,24 @@ angular.module('controllers', ['ionic','ngResource','services'])
                       //Storage存入VisitNo
                       Storage.set("VisitNo",$scope.NewVisitNo.VisitNo); 
                       $ionicLoading.show({
-                       template: "保存成功",
+                       template: "保存VisitNo成功",
                        noBackdrop: true,
                        duration: 700,
                       });
                   }
                 },function(err) {  
                    $ionicLoading.show({
-                      template: "保存失败",
+                      template: "保存VisitNo失败",
                      noBackdrop: false,
                      duration: 1000,
                      hideOnStateChange: true
                    }); 
-              }); 
-            }
-          },
-          {
-              text: '取消',
-              type: 'button-positive',
-          }]
-    });
-     
+              });  
   };
      
-  //后送确认框         
+  //后送选择框         
     $scope.showreservePop = function() {
+      $scope.saveVisitInfo();
       if( (Storage.get("VisitNo")!='') && (Storage.get("PatientID")!=''))
       {
             var myPopup = $ionicPopup.show({
@@ -976,6 +951,10 @@ angular.module('controllers', ['ionic','ngResource','services'])
     $ionicHistory.goBack();
   };
   
+   $scope.goInjury = function() {
+    //$scope.saveVisitInfo();
+     Storage.set("New", 0);
+  };
 
   //获取病人基本信息
   var GetPatientbyPID= function(strPatientID)
@@ -1172,7 +1151,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
 
 // --------分流人员-列表、信息查看、分流 [张亚童]----------------
 //信息查看
-.controller('ViewEmergencyCtrl', ['$scope', '$ionicHistory', '$http','$ionicPopup' ,'$ionicLoading','Storage','MstType', 'PatientInfo', 'VitalSignInfo', 'EmergencyInfo','PatientVisitInfo', 'Common', function ($scope, $ionicHistory,$http,$ionicPopup, $ionicLoading, Storage, MstType, PatientInfo, VitalSignInfo, EmergencyInfo, PatientVisitInfo, Common) {
+.controller('ViewEmergencyCtrl', ['$scope', '$ionicHistory', '$http','$ionicPopup' ,'$ionicLoading','Storage','MstType', 'PatientInfo', 'VitalSignInfo', 'EmergencyInfo','PatientVisitInfo', 'Common', 'MstDivision',function ($scope, $ionicHistory,$http,$ionicPopup, $ionicLoading, Storage, MstType, PatientInfo, VitalSignInfo, EmergencyInfo, PatientVisitInfo, Common, MstDivision) {
   
   $scope.goBack = function() {
     $ionicHistory.goBack();
@@ -1207,7 +1186,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
   });
 
   // 读入分诊去向字典表
-  var promise = MstType.GetMstType("TriageDept");
+  var promise = MstDivision.GetDivisions();
   promise.then(function(data){
     $scope.TriageDepts = data;
   }, function(err){
@@ -1256,8 +1235,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
 //伤情、处置记录
 //生理参数采集
 ////---------------------伤情记录/处置，生理生化信息录入界面---------马志彬
-.controller('InjuryCtrl', ['$scope','$http','$ionicScrollDelegate','$ionicPlatform','bleService','$rootScope','Patients','$ionicPopup','$ionicHistory','VitalSignInfo','EmergencyInfo', 
-  function ($scope,$http,$ionicScrollDelegate,$ionicPlatform,bleService,$rootScope,Patients,$ionicPopup,$ionicHistory,VitalSignInfo,EmergencyInfo) {
+.controller('InjuryCtrl', ['$scope','$http','$ionicScrollDelegate','$ionicPlatform','bleService','$rootScope','Patients','$ionicPopup','$ionicHistory','VitalSignInfo','EmergencyInfo', '$state','Storage',
+  function ($scope,$http,$ionicScrollDelegate,$ionicPlatform,bleService,$rootScope,Patients,$ionicPopup,$ionicHistory,VitalSignInfo,EmergencyInfo, $state,Storage) {
   $scope.head = 'HEAD';
 
   //屏幕高度和宽度
@@ -1367,7 +1346,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
         console.log(e);
     })
     $scope.onClickBackward = function(){
-      $ionicHistory.goBack();
+      if(Storage.get("New")==1)  $state.go('ambulance.list'); //回主页
+      else $ionicHistory.goBack();
     } 
       $scope.firstdirs = [//左侧目录的数据
       [   "InjuryPart",//伤情记录

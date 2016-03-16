@@ -5,8 +5,28 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters'])
 
-.run(function($ionicPlatform, $rootScope,Storage) {
+.run(function($ionicPlatform, $rootScope, Storage, $state, nfcService, UserInfo) {
   $ionicPlatform.ready(function() {
+    //自动登录
+    var userid=Storage.get('USERID');
+    var passwd=Storage.get('PASSWD');
+    if(userid!=undefined && passwd!=undefined){
+        $ionicLoading.show();
+        UserInfo.LogOn(userid,passwd)
+        .then(function(data){
+          if(data.Result==1){
+            $ionicLoading.hide();
+            Storage.set('RoleCode',data.RoleCode);
+            $state.go('location');
+          }else{
+            $ionicLoading.hide();
+          }
+        },function(err){
+          $ionicLoading.hide();
+        });
+     
+    }
+
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -33,6 +53,8 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
     $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
         alert('掉线啦');
     })
+    $rootScope.eraseCard=false;
+    $rootScope.NFCmodefy=false;
     Storage.set('UUID',ionic.Platform.device().uuid);
     Storage.rm('MY_LOCATION');
   });
@@ -123,24 +145,17 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
         }
       }
     })
-    .state('ambulance.myProfile',{
+    .state('myProfile',{
+      cache:false,
       url: '/myprofile',
-      views:{
-       'mine':{
-          templateUrl: 'templates/mine/myProfile.html',
-          controller:'myProfileCtrl'
-        }
-      }
+      templateUrl: 'templates/mine/myProfile.html',
+      controller:'myProfileCtrl'
     })   
-    .state('ambulance.setPassword', {
+    .state('setPassword', {
       cache:false,
       url: '/setPassword',
-      views:{
-       'mine':{
-          templateUrl: 'templates/signIn/setPassword.html',
-          controller: 'SetPasswordCtrl'
-        }
-      }      
+      templateUrl: 'templates/signIn/setPassword.html',
+      controller: 'SetPasswordCtrl'    
     });
 
     //起始页

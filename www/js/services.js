@@ -151,7 +151,11 @@ return{
           GETEmergencyDictItems:{method:'GET',isArray:true, params:{route: 'GetAllMstEmergencyItemDict'}, timeout: 10000}
       });
   };
-
+  var MstDivision = function(){
+      return $resource(CONFIG.baseUrl + ':path/:route',{path:'MstDivision'},{
+          GetDivisions:{method:'GET',isArray:true, params:{route: 'GetDivisions'}, timeout: 10000}
+      });
+  };
   serve.abort = function ($scope) {
   abort.resolve();
   $interval(function () {
@@ -165,6 +169,7 @@ return{
     serve.EmergencyInfo = EmergencyInfo();
     serve.MstVitalSignDict = MstVitalSignDict();
     serve.MstEmergencyItemDict = MstEmergencyItemDict();
+    serve.MstDivision = MstDivision();
     }, 0, 1);
   };
   serve.Users = Users();
@@ -176,6 +181,7 @@ return{
   serve.EmergencyInfo = EmergencyInfo();
   serve.MstVitalSignDict = MstVitalSignDict();
   serve.MstEmergencyItemDict = MstEmergencyItemDict();
+  serve.MstDivision = MstDivision();
   return serve;
 }])
 
@@ -481,6 +487,24 @@ return{
   };
   return self;
 }])
+
+//获取字典表MstDivision数据
+.factory('MstDivision', ['$q','$http', 'Data', function($q,$http, Data){
+  var self = this;
+
+  self.GetDivisions = function(){
+    var deferred = $q.defer();
+    Data.MstDivision.GetDivisions({},
+      function(data, headers){
+        deferred.resolve(data);
+      },function(err){
+        deferred.reject(err);
+      });
+    return deferred.promise;
+  };
+  return self;
+}])
+
 //-------急救人员-伤情与处置-------- [马志彬]
 ////////////蓝牙(BLE)相关服务///马志彬-----------start
 .factory('bleService', function () {
@@ -618,4 +642,142 @@ return{
         return self;
     }])
   ///////////////////////////////////////////////-----end
+
+
+//NFC XJZ
+.factory('nfcService', function ($rootScope, $ionicPlatform,$ionicPopup,$ionicLoading,$state,Storage) {
+
+    var tag = {};
+    var openPop = function(){
+      $ionicPopup.show({
+        title: '<center>发现NFC卡片</center>',
+        template: '卡片信息为空，新建患者？',
+        //subTitle: '2',
+        scope: $rootScope,
+        buttons: [
+          {
+            text: '确定',
+            type: 'button-assertive',
+            onTap: function(e) {
+                $state.go('ambulance.mine');
+            }
+          },{ text: '取消',
+              type: 'button-calm',
+            onTap: function(e) {}
+          }
+        ]
+      });      
+    }
+    var writeTag = function(){
+      nfc.write(
+        [$rootScope.recordToWrite], 
+        function () {
+            $rootScope.recordToWrite='';
+            $rootScope.NFCmodefy=false;
+            $ionicLoading.hide();
+            $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:2000});
+            console.log("Wrote data to tag.");
+        }, 
+        function (reason) {
+            $ionicLoading.hide();
+            // $ionicLoading.show({template:'密码验证成功',noBackdrop:true,duration:2000});
+            $ionicPopup.show({
+              title: '<center>操作失败</center>',
+              template: '请重新写入信息至NFC卡片',
+              //subTitle: '2',
+              scope: $rootScope,
+              buttons: [
+                {
+                  text: '确定',
+                  type: 'button-assertive',
+                  onTap: function(e) {
+                  }
+                }
+              ]
+            });
+            //navigator.notification.alert(reason, function() {}, "There was a problem");
+            // console.log(reason);
+        }
+      );
+    }
+    $ionicPlatform.ready(function() {
+        nfc.addNdefListener(function (nfcEvent) {
+            if(Storage.get('MY_LOCATION') == undefined){
+              $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
+            }else if($rootScope.eraseCard == true){
+              nfc.erase(function(){
+                $ionicLoading.show({template:'NFC卡片擦除成功',noBackdrop:true,duration:2000});
+                $rootScope.eraseCard=false;
+              },function(){});
+            }else{
+              console.log(JSON.stringify(nfcEvent, null, 4));
+              console.log(nfcEvent);
+              $rootScope.$apply(function(){
+                  //angular.copy(nfcEvent.tag, tag);
+                  if(!$rootScope.NFCmodefy && (typeof(nfcEvent.tag.ndefMessage) === 'undefined' || nfcEvent.tag.ndefMessage[0].id=='')){
+                    openPop();
+                  }else if(!$rootScope.NFCmodefy){
+                    var temp= new Array();
+                    temp = nfc.bytesToString(nfcEvent.tag.ndefMessage[0].id).split("|");//取出相应数据
+                    //var pid=temp[0];
+                    //var visit=temp[1];
+                    Storage.set('PatientID',temp[0]);
+                    Storage.set('VisitNo',temp[1]);
+                    if(Storage.get('RoleCode') == EmergencyPersonnel) $state.go('visitInfo');
+                    else  $state.go('viewEmergency');
+                    
+                  }
+              });
+              if($rootScope.NFCmodefy && $rootScope.recordToWrite!=undefined && $rootScope.recordToWrite!=''){
+                //写信息
+                writeTag();
+              }              
+            }
+        }, function () {
+            console.log("Listening for any tag type.");
+        }, function (reason) {
+            alert("Error adding NFC Listener " + reason);
+        });
+        
+        nfc.addTagDiscoveredListener(function (nfcEvent) {
+            console.log(JSON.stringify(nfcEvent, null, 4));
+            console.log(nfcEvent);
+            if(Storage.get('MY_LOCATION') == undefined){
+              $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
+            }else if($rootScope.NFCmodefy && $rootScope.recordToWrite!=undefined && $rootScope.recordToWrite!=''){
+              writeTag();
+            }else{
+              var type = "",
+                  id = '',
+                  payload = "",
+                  record = ndef.record(ndef.TNF_MIME_MEDIA, type, id, payload);
+
+              nfc.write(
+                [record], 
+                function () {
+                  openPop();                       
+                }, 
+                function (reason) {
+                  //navigator.notification.alert(reason, function() {}, "There was a problem");
+                  // console.log(reason);
+                }
+              );              
+            }
+        }, function () {
+            console.log("Listening for any tag type.");
+        }, function (reason) {
+            alert("Error adding NFC Listener " + reason);
+        });
+    });
+
+    return {
+        // tag: tag
+    };
+})
+
+//后送
+.factory('Evacation', function ($rootScope, $ionicPlatform,$ionicPopup,$ionicLoading,$state,Storage) {
+  
+})
+//分诊
 ;
