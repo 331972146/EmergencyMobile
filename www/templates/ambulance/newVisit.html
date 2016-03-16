@@ -10,10 +10,16 @@
     <div class="list card">
       <div class="item item-avatar">
         <img src="img/head_portrait.jpg">
-        <h2>ID号：{{Patient.PatientID}}</h2>
-        <p>姓名：{{Patient.PatientName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+          <div class="row">
+            <div class="col" >
+              <h2>ID号：{{Patient.PatientID}}</h2>
+             <p>姓名：{{Patient.PatientName}}</p></div>  
+            <div class="col-50">
+               <button class="button button-icon icon ion-android-archive calm" style="float:right" ng-click="wirteToCard()">&nbsp;写卡</button>
+            </div>
+          </div> 
       </div>
-
+    
       <ion-item>
         <div style="width:100%">
           <span class="input-label" >伤员就诊编号:</span> 
@@ -52,7 +58,7 @@
             <i class="ion-ios-bolt" style="font-size:30px;"></i>
             后送
           </a>
-          <a class="tab-item" href="#/injury" style="font-size:16px;color:green" ng-click="goInjury()">
+          <a class="tab-item" href="#" style="font-size:16px;color:green" ng-click="goInjury()">
            <i class="ion-ios-compose active"style="font-size:30px;"></i>
            伤情
           </a>

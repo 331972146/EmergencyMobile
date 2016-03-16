@@ -156,6 +156,11 @@ return{
           GetDivisions:{method:'GET',isArray:true, params:{route: 'GetDivisions'}, timeout: 10000}
       });
   };
+  var MstEva = function(){
+      return $resource(CONFIG.baseUrl + ':path/:route',{path:'MstEva'},{
+          GetDataByEVATransportation:{method:'GET',isArray:true, params:{route: 'GetDataByEVATransportation'}, timeout: 10000}
+      });
+  };
   serve.abort = function ($scope) {
   abort.resolve();
   $interval(function () {
@@ -170,6 +175,7 @@ return{
     serve.MstVitalSignDict = MstVitalSignDict();
     serve.MstEmergencyItemDict = MstEmergencyItemDict();
     serve.MstDivision = MstDivision();
+    serve.MstEva = MstEva();
     }, 0, 1);
   };
   serve.Users = Users();
@@ -182,6 +188,7 @@ return{
   serve.MstVitalSignDict = MstVitalSignDict();
   serve.MstEmergencyItemDict = MstEmergencyItemDict();
   serve.MstDivision = MstDivision();
+  serve.MstEva = MstEva();
   return serve;
 }])
 
@@ -505,6 +512,22 @@ return{
   return self;
 }])
 
+//获取后送批次字典表数据
+.factory('MstEva', ['$q','$http', 'Data', function($q,$http, Data){
+  var self = this;
+
+  self.GetDataByEVATransportation = function(EVATransportation){
+    var deferred = $q.defer();
+    Data.MstEva.GetDataByEVATransportation({EVATransportation:EVATransportation},
+      function(data, headers){
+        deferred.resolve(data);
+      },function(err){
+        deferred.reject(err);
+      });
+    return deferred.promise;
+  };
+  return self;
+}])
 //-------急救人员-伤情与处置-------- [马志彬]
 ////////////蓝牙(BLE)相关服务///马志彬-----------start
 .factory('bleService', function () {

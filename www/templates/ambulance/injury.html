@@ -3,10 +3,11 @@
 <ion-nav-bar class="bar-positive">
 	<ion-nav-buttons side="left">
       <button class="button button-icon ion-ios-arrow-left" ng-click="onClickBackward()">返回</button>
+
     </ion-nav-buttons>
-    <!-- <ion-nav-buttons side="right">
-      <button class="button button-icon ion-ios-list-outline" ng-click=""></button>
-    </ion-nav-buttons> -->
+    <ion-nav-buttons side="right">
+       <a class="button button-icon icon ion-ios-list-outline" href="#/patientInfo"></a>
+    </ion-nav-buttons>
 </ion-nav-bar>
     <div class="textarea2" ng-style="mytext2height">
     	<textarea ng-style="mytext2textareaheight" id="mytext2" ng-model="textarea2value" ng-blur="loosecurse()" type="text" rows="1" placeholder="请填写50字以内" ng-maxlength=50></textarea>
@@ -19,12 +20,12 @@
 	<ion-nav-view id="basicinfo" class="basicinfo hide-on-keyboard-open">
 		<ion-content scroll="false">
 			<a class="item item-thumbnail-left" href="#">
-				<img src="img/photo.png">
+				<img src="img/head_portrait.jpg">
 				<h2>
-					姓名：{{testdata.name}} &nbsp&nbsp&nbsp&nbsp
-					性别：{{testdata.sex}}
+					病人ID：{{testdata.PatientID}} &nbsp&nbsp&nbsp&nbsp
+					就诊编号：{{testdata.VisitNo}}
 				</h2>
-				<h2>PID：{{testdata.PID}}</h2>
+				<!-- <h2>姓名：{{testdata.PID}}</h2> -->
 			</a>
 		</ion-content>
 	</ion-nav-view>
@@ -122,8 +123,8 @@
 	<ion-nav-view id="bottombutton" class="bottombutton hide-on-keyboard-open">
 		<ion-content scroll="false" scrollbar-y="false">
 			<div class="button-bar">
-			  <a class="button button-assertive">直接后送</a>
-			  <a class="button button-positive" ng-click="saveall()">全部保存</a>
+			  <a class="button button-assertive" ng-click="saveall()">后送</a>
+			  <a class="button button-positive" ng-click="saveall()">保存</a>
 			</div>
 		</ion-content>
 	</ion-nav-view>
