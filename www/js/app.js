@@ -5,8 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters','directives'])
 
-.run(function($ionicPlatform, $rootScope, Storage, $state, nfcService, UserInfo) {
+.run(function($ionicPlatform, $rootScope,$ionicLoading,$state, Storage, UserInfo,nfcService) {
   $ionicPlatform.ready(function() {
+    console.log(window.localStorage);
     Storage.rm('MY_LOCATION');
     //自动登录
     var userid=Storage.get('USERID');
@@ -57,6 +58,122 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
     $rootScope.eraseCard=false;
     $rootScope.NFCmodefy=false;
     Storage.set('UUID',ionic.Platform.device().uuid);
+    console.log(nfcService);
+    nfcService.start();
+    // var openPop = function(){
+    //   $ionicPopup.show({
+    //     title: '<center>发现NFC卡片</center>',
+    //     template: '卡片信息为空，新建患者？',
+    //     //subTitle: '2',
+    //     scope: $rootScope,
+    //     buttons: [
+    //       {
+    //         text: '确定',
+    //         type: 'button-assertive',
+    //         onTap: function(e) {
+    //             $state.go('ambulance.mine');
+    //         }
+    //       },{ text: '取消',
+    //           type: 'button-calm',
+    //         onTap: function(e) {}
+    //       }
+    //     ]
+    //   });      
+    // }
+    // var writeTag = function(){
+    //   nfc.write(
+    //     [$rootScope.recordToWrite], 
+    //     function () {
+    //         $rootScope.recordToWrite='';
+    //         $rootScope.NFCmodefy=false;
+    //         $ionicLoading.hide();
+    //         $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:2000});
+    //         console.log("Wrote data to tag.");
+    //     }, 
+    //     function (reason) {
+    //         $ionicLoading.hide();
+    //         $ionicPopup.show({
+    //           title: '<center>操作失败</center>',
+    //           template: '请重新写入信息至NFC卡片',
+    //           //subTitle: '2',
+    //           scope: $rootScope,
+    //           buttons: [
+    //             {
+    //               text: '确定',
+    //               type: 'button-assertive',
+    //               onTap: function(e) {
+    //               }
+    //             }
+    //           ]
+    //         });
+    //         //navigator.notification.alert(reason, function() {}, "There was a problem");
+    //         // console.log(reason);
+    //     }
+    //   );
+    // }
+    // nfc.addNdefListener(function (nfcEvent) {
+    //     if(Storage.get('MY_LOCATION') == undefined){
+    //       $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
+    //     }else if($rootScope.eraseCard == true){
+    //       nfc.erase(function(){
+    //         $ionicLoading.hide();
+    //         $ionicLoading.show({template:'NFC卡片擦除成功',noBackdrop:true,duration:2000});
+    //         $rootScope.eraseCard=false;
+    //       },function(){});
+    //     }else{
+    //       console.log(JSON.stringify(nfcEvent, null, 4));
+    //       console.log(nfcEvent);
+    //       $rootScope.$apply(function(){
+    //           //angular.copy(nfcEvent.tag, tag);
+    //           if(!$rootScope.NFCmodefy && (typeof(nfcEvent.tag.ndefMessage) === 'undefined' || nfcEvent.tag.ndefMessage[0].id=='')){
+    //             openPop();
+    //           }else if(!$rootScope.NFCmodefy){
+    //             var temp= new Array();
+    //             temp = nfc.bytesToString(nfcEvent.tag.ndefMessage[0].id).split("|");//取出相应数据
+    //             //var pid=temp[0];
+    //             //var visit=temp[1];
+    //             Storage.set('PatientID',temp[0]);
+    //             Storage.set('VisitNo',temp[1]);
+    //             if(Storage.get('RoleCode') == EmergencyPersonnel) $state.go('visitInfo');
+    //             else  $state.go('viewEmergency');
+                
+    //           }
+    //       });
+    //       if($rootScope.NFCmodefy && $rootScope.recordToWrite!=undefined && $rootScope.recordToWrite!=''){
+    //         //写信息
+    //         writeTag();
+    //       }              
+    //     }
+    // }, function () {
+    //     console.log("Listening for any tag type.");
+    // }, function (reason) {
+    //     alert("Error adding NFC Listener " + reason);
+    // });
+        
+    // nfc.addTagDiscoveredListener(function (nfcEvent) {
+    //     console.log(JSON.stringify(nfcEvent, null, 4));
+    //     console.log(nfcEvent);
+    //     if(Storage.get('MY_LOCATION') == undefined){
+    //       $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
+    //     }else if($rootScope.NFCmodefy && $rootScope.recordToWrite!=undefined && $rootScope.recordToWrite!=''){
+    //       writeTag();
+    //     }else{
+    //       var record = ndef.record(ndef.TNF_MIME_MEDIA, "", "", "");
+    //       nfc.write(
+    //         [record], 
+    //         function () {
+    //           openPop();                       
+    //         }, 
+    //         function (reason) {
+    //           // console.log(reason);
+    //         }
+    //       );              
+    //     }
+    // }, function () {
+    //     console.log("Listening for any tag type.");
+    // }, function (reason) {
+    //     alert("Error adding NFC Listener " + reason);
+    // });   
   });
 })
 

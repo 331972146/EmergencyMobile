@@ -681,7 +681,7 @@ return{
             text: '确定',
             type: 'button-assertive',
             onTap: function(e) {
-                $state.go('ambulance.mine');
+                $state.go('newPatient');
             }
           },{ text: '取消',
               type: 'button-calm',
@@ -697,8 +697,8 @@ return{
             $rootScope.recordToWrite='';
             $rootScope.NFCmodefy=false;
             $ionicLoading.hide();
-            $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:2000});
-            console.log("Wrote data to tag.");
+            $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:1000});
+            $state.go('injury');
         }, 
         function (reason) {
             $ionicLoading.hide();
@@ -721,7 +721,7 @@ return{
         }
       );
     }
-    $ionicPlatform.ready(function() {
+    var start = function() {
         nfc.addNdefListener(function (nfcEvent) {
             if(Storage.get('MY_LOCATION') == undefined){
               $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
@@ -745,7 +745,7 @@ return{
                     //var visit=temp[1];
                     Storage.set('PatientID',temp[0]);
                     Storage.set('VisitNo',temp[1]);
-                    if(Storage.get('RoleCode') == EmergencyPersonnel) $state.go('visitInfo');
+                    if(Storage.get('RoleCode') == 'EmergencyPersonnel') $state.go('visitInfo');
                     else  $state.go('viewEmergency');
                     
                   }
@@ -785,9 +785,10 @@ return{
         }, function (reason) {
             alert("Error adding NFC Listener " + reason);
         });
-    });
+    }
 
     return {
+      start,
     };
 })
 

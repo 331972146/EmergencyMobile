@@ -19,7 +19,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
             $ionicLoading.hide();
             $ionicLoading.show({template:'登录成功',noBackdrop:true,duration:1500});
             Storage.set('RoleCode',data.RoleCode);
-            // $scope.logStatus="登录成功";
+            Storage.set('PASSWD',account.password);
             Storage.set('USERID',account.UserID);
             $state.go('location');
           }else{
@@ -40,7 +40,6 @@ angular.module('controllers', ['ionic','ngResource','services'])
   var t={'DivideLeader':'分流组长','DividePersonnel':'分流人员','EmergencyPersonnel':'急救人员'};
   Storage.set("DictRoleMatch",JSON.stringify(t));
   $scope.toRegister = function(){
-    // $rootScope.registerEnterState=true;
     $state.go('register');
   }
 }])
@@ -81,8 +80,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
           $ionicLoading.hide();
           $ionicLoading.show({template:'注册成功',noBackdrop:true,duration:1500})
           Storage.set('RoleCode',sendData.RoleCode);
-          // $scope.logStatus="注册成功";
           Storage.set('USERID',sendData.UserId);
+          Storage.set('PASSWD',sendData.LoginPassword);
           $state.go('location');
         },function(err){
           $ionicLoading.hide();
@@ -111,12 +110,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
         .then(function(data){
           $ionicLoading.hide();
           $ionicLoading.show({template:'密码验证成功',noBackdrop:true,duration:1500})
-          // $scope.logStatus1='验证成功';
           $scope.ishide=true; 
-          // Storage.set('RoleCode',data.RoleCode);
-          // $scope.logStatus="登录成功";
-          // Storage.set('USERID',account.UserID);
-          // $timeout($state.go('location'),500);
         },function(err){
           $ionicLoading.hide();
           $scope.logStatus1="验证失败";
@@ -136,8 +130,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
           UserInfo.ChangePassword(Storage.get('USERID'),change.oldPassword,change.newPassword)
           .then(function(data){
             $ionicLoading.hide();
+            Storage.set('PASSWD',change.newPassword);
             $ionicLoading.show({template:'修改成功',noBackdrop:true,duration:1500})
-            // $scope.logStatus2="修改成功";
             $state.go('ambulance.mine');
           },function(err){
             $ionicLoading.hide();
@@ -228,6 +222,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
 
   $scope.onClickBackward = function(){
     // $scope.$apply(function(){
+      $scope.isListShown=false;
       $scope.myLocation.Description=MY_LOCATION;
     // })
     console.log($rootScope.MY_LOCATION);
@@ -238,7 +233,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
 .controller('SettingCtrl',['$ionicLoading','$state','$scope','$ionicPopup','$timeout','$ionicHistory','$rootScope','Storage',function($ionicLoading,$state,$scope,$ionicPopup,$timeout,$ionicHistory,$rootScope,Storage){
   $scope.$on('$ionicView.enter', function() {
     $scope.myLocation=Storage.get('MY_LOCATION');
-    $scope.isListShown=false;
+    // $scope.isListShown=false;
     $scope.userInfo={"userid":Storage.get("USERID"), role:Storage.get("RoleCode")};
   });
   //获取医生基本信息
@@ -275,7 +270,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
     $rootScope.NFCmodefy=true;
     var type = "text/pg",
         pid = "331972146|2016313",
-        payload = nfc.stringToBytes("fdsf"),
+        payload = nfc.stringToBytes("test success"),
         record = ndef.record(ndef.TNF_MIME_MEDIA, type, pid, payload);
     $rootScope.recordToWrite=record;
     $ionicLoading.show({template:'请将手机靠近NFC卡片'});
@@ -289,14 +284,14 @@ angular.module('controllers', ['ionic','ngResource','services'])
 //个人信息维护
 .controller('myProfileCtrl',['$state','$scope','$ionicHistory','$ionicLoading','UserInfo','Storage',function($state,$scope,$ionicHistory,$ionicLoading,UserInfo,Storage){
   var DictRoles=JSON.parse(Storage.get('DictRoleMatch'));
-  var temp={};
-  $scope.$on('$ionicView.enter', function(){
-    if(temp){
-      $scope.$apply(function(){
-        $scope.profile = temp;
-      })
-    }
-  });
+  // var temp={};
+  // $scope.$on('$ionicView.enter', function(){
+  //   if(temp){
+  //     $scope.$apply(function(){
+  //       $scope.profile = temp;
+  //     })
+  //   }
+  // });
   $scope.profile={UserName:'',role:'',Occupation:'',Position:'',Affiliation:''};
   $scope.upload = function(profile){
     $ionicLoading.show();
@@ -308,9 +303,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
     UserInfo.ModifyUserInfo(Storage.get('USERID'),profile.RoleCode,profile.UserName,profile.Occupation,profile.Position,profile.Affiliation)
     .then(function(data){
       $ionicLoading.hide();
-      temp={UserName:profile.UserName,role:profile.role,Occupation:profile.Occupation,Position:profile.Position,Affiliation:profile.Affiliation};
+      // temp={UserName:profile.UserName,role:profile.role,Occupation:profile.Occupation,Position:profile.Position,Affiliation:profile.Affiliation};
       $ionicLoading.show({template:'修改成功',noBackdrop:true,duration:1500});
-      // $scope.logStatus="修改成功";
     },function(err){
       $scope.logStatus="修改失败";
     })    
@@ -319,14 +313,13 @@ angular.module('controllers', ['ionic','ngResource','services'])
   UserInfo.GetModifyUserInfo(Storage.get('USERID'))
   .then(function(data){
     $ionicLoading.hide();
-    // $scope.profile.UserName = data.UserName;
     angular.forEach(DictRoles,function(value,key){
       if(data.RoleCode == key){
         data.role=value;
       }
     })
     delete data['RoleCode'];
-    temp = data;
+    // temp = data;
     $scope.profile = data;
   },function(err){
     $ionicLoading.hide();
@@ -637,7 +630,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
 }])
 
 //新建VID
-.controller('NewVisitCtrl', ['$scope', '$ionicHistory', '$http','$ionicPopup' ,'PatientVisitInfo', '$ionicLoading','MstType','Storage','PatientInfo', 'Common', 'MstEva','$state' ,function ($scope, $ionicHistory,$http,$ionicPopup,PatientVisitInfo, $ionicLoading,MstType,Storage, PatientInfo, Common, MstEva, $state) {
+.controller('NewVisitCtrl', ['$rootScope','$timeout','$scope', '$ionicHistory', '$http','$ionicPopup' ,'PatientVisitInfo', '$ionicLoading','MstType','Storage','PatientInfo', 'Common', 'MstEva','$state' ,function ($rootScope,$timeout,$scope, $ionicHistory,$http,$ionicPopup,PatientVisitInfo, $ionicLoading,MstType,Storage, PatientInfo, Common, MstEva, $state) {
 
   //写入信息
   $scope.wirteToCard = function(){
@@ -645,14 +638,15 @@ angular.module('controllers', ['ionic','ngResource','services'])
       $rootScope.NFCmodefy=true;
       var type = "text/pg",
           id = Storage.get("PatientID")+"|"+Storage.get("VisitNo"),
-          payload = nfc.stringToBytes("fdsf"),
+          payload = "",//暂时用不到
+          // payload = nfc.stringToBytes("fdsf"),
           record = ndef.record(ndef.TNF_MIME_MEDIA, type, id, payload);
       $rootScope.recordToWrite=record;
-      $ionicLoading.show({template:'请将手机靠近NFC卡片'});
+      $ionicLoading.show({template:'信息写入,请将设备靠近NFC卡片'});
     }
     else
     {
-       $ionicLoading.show({
+        $ionicLoading.show({
            template: '请先保存就诊记录',
            noBackdrop: false,
            duration: 1000,
@@ -737,7 +731,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
                        noBackdrop: true,
                        duration: 700,
                       });
-                      $state.go('injury');
+                      $timeout($scope.wirteToCard(),500);
+                      // $state.go('injury');
                   }
                 },function(err) {  
                    $ionicLoading.show({
