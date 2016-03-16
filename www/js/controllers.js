@@ -231,13 +231,11 @@ angular.module('controllers', ['ionic','ngResource','services'])
       $scope.myLocation.Description=MY_LOCATION;
     // })
     console.log($rootScope.MY_LOCATION);
-    // if($scope.navFlag){
       $state.go('ambulance.mine');
-    // }
   }
 }])
 //设置-退出
-.controller('SettingCtrl',['$state','$scope','$ionicPopup','$timeout','$ionicHistory','$rootScope','Storage',function($state,$scope,$ionicPopup,$timeout,$ionicHistory,$rootScope,Storage){
+.controller('SettingCtrl',['$ionicLoading','$state','$scope','$ionicPopup','$timeout','$ionicHistory','$rootScope','Storage',function($ionicLoading,$state,$scope,$ionicPopup,$timeout,$ionicHistory,$rootScope,Storage){
   $scope.$on('$ionicView.enter', function() {
     $scope.myLocation=Storage.get('MY_LOCATION');
     $scope.isListShown=false;
@@ -273,6 +271,19 @@ angular.module('controllers', ['ionic','ngResource','services'])
       ]
     });    
   }
+  $scope.wirteToCard = function(){
+    $rootScope.NFCmodefy=true;
+    var type = "text/pg",
+        pid = "331972146|2016313",
+        payload = nfc.stringToBytes("fdsf"),
+        record = ndef.record(ndef.TNF_MIME_MEDIA, type, pid, payload);
+    $rootScope.recordToWrite=record;
+    $ionicLoading.show({template:'请将手机靠近NFC卡片'});
+  }
+  $scope.eraseCard = function(){
+    $rootScope.eraseCard=true;
+    $ionicLoading.show({template:'请将手机靠近NFC卡片'});
+  }  
 }])
 
 //个人信息维护
