@@ -1,7 +1,8 @@
 <ion-view view-title="创建就诊记录">
 
   <ion-header-bar class="bar-calm">
-    <button class="button button-clear" ng-click="goBack()">返回</button>
+    <!-- <button class="button button-clear" ng-click="goBack()">返回</button> -->
+    <a class="button button-icon icon ion-ios-home" href="#/ambulance/list" ></a>
     <h1 class="title">创建就诊记录</h1>
   </ion-header-bar>
 
@@ -9,10 +10,16 @@
     <div class="list card">
       <div class="item item-avatar">
         <img src="img/head_portrait.jpg">
-        <h2>ID号：{{Patient.PatientID}}</h2>
-        <p>姓名：{{Patient.PatientName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+          <div class="row">
+            <div class="col" >
+              <h2>ID号：{{Patient.PatientID}}</h2>
+             <p>姓名：{{Patient.PatientName}}</p></div>  
+            <div class="col-50">
+               <button class="button button-icon icon ion-android-archive calm" style="float:right" ng-click="wirteToCard()">&nbsp;写卡</button>
+            </div>
+          </div> 
       </div>
-
+    
       <ion-item>
         <div style="width:100%">
           <span class="input-label" >伤员就诊编号:</span> 
@@ -43,7 +50,7 @@
         </div>
 
         <div class="item tabs tabs-secondary tabs-icon-left "style="vertical-align:center;">
-          <a class="tab-item" ng-click="showConfirm()" style="font-size:16px;color:blue">
+          <a class="tab-item" ng-click="saveVisitInfo()" style="font-size:16px;color:blue">
             <i class="ion-android-upload" style="font-size:30px;"></i>
             保存
           </a>
@@ -51,7 +58,7 @@
             <i class="ion-ios-bolt" style="font-size:30px;"></i>
             后送
           </a>
-          <a class="tab-item" href="#/injury" style="font-size:16px;color:green">
+          <a class="tab-item" href="#" style="font-size:16px;color:green" ng-click="goInjury()">
            <i class="ion-ios-compose active"style="font-size:30px;"></i>
            伤情
           </a>

@@ -13,23 +13,21 @@
       <input type="datetime-local"  style="width:100%;background:#f4f4f4;" ng-model="evacuationInfo.EvaDateTime"> 
     </div>
   </div>   --> 
+  <div class="row">
+    <div class="col" >后送方式 </div>  
+    <div class="col-50">
+      <select ng-model="evacuationInfo.EvaTransportation" ng-options="EvaTransportation.Type as EvaTransportation.Description for EvaTransportation in EvaTransportations" ng-change="changeEVABatchNos(evacuationInfo.EvaTransportation)">
+      </select>
+    </div>
+  </div>     
 
   <div class="row">
     <div class="col" >后送批次 </div>  
     <div class="col-50">
-      <select ng-model="evacuationInfo.EVABatchNo" ng-options="EVABatchNo.Type as EVABatchNo.Description for EVABatchNo in EVABatchNos" >
+      <select ng-model="evacuationInfo.EvaBatchNo" ng-options="EVABatchNo.EVANO as EVABatchNo.EVATransName for EVABatchNo in EVABatchNos" >
       </select>
     </div>
   </div>     
-   
-  <div class="row">
-    <div class="col" >后送方式 </div>  
-    <div class="col-50">
-      <select ng-model="evacuationInfo.EvaTransportation" ng-options="EvaTransportation.Type as EvaTransportation.Description for EvaTransportation in EvaTransportations" >
-      </select>
-    </div>
-  </div>        
-
   <div class="row">
     <div class="col">后送体位 </div>  
     <div class="col-50">
