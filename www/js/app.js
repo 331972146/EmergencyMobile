@@ -3,10 +3,32 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters'])
+angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters','directives'])
 
-.run(function($ionicPlatform, $rootScope,Storage) {
+.run(function($ionicPlatform, $rootScope,$ionicLoading,$state, Storage, UserInfo,nfcService) {
   $ionicPlatform.ready(function() {
+    console.log(window.localStorage);
+    Storage.rm('MY_LOCATION');
+    //自动登录
+    var userid=Storage.get('USERID');
+    var passwd=Storage.get('PASSWD');
+    if(userid!=undefined && passwd!=undefined){
+        $ionicLoading.show();
+        UserInfo.LogOn(userid,passwd)
+        .then(function(data){
+          if(data.Result==1){
+            $ionicLoading.hide();
+            Storage.set('RoleCode',data.RoleCode);
+            $state.go('location');
+          }else{
+            $ionicLoading.hide();
+          }
+        },function(err){
+          $ionicLoading.hide();
+        });
+     
+    }
+
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -33,8 +55,11 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
     $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
         alert('掉线啦');
     })
+    $rootScope.eraseCard=false;
+    $rootScope.NFCmodefy=false;
     Storage.set('UUID',ionic.Platform.device().uuid);
-    Storage.rm('MY_LOCATION');
+    console.log(nfcService);
+    nfcService.start();  
   });
 })
 
@@ -124,6 +149,7 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
       }
     })
     .state('ambulance.myProfile',{
+      cache: false,
       url: '/myprofile',
       views:{
        'mine':{
@@ -146,4 +172,16 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
     //起始页
     $urlRouterProvider.otherwise('/signIn');
   }])
+
+// --------不同平台的相关设置----------------
+.config(function($ionicConfigProvider) {
+  $ionicConfigProvider.views.maxCache(3);
+  // note that you can also chain configs
+  $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.tabs.style('standard');
+  $ionicConfigProvider.navBar.alignTitle('center');
+  $ionicConfigProvider.navBar.positionPrimaryButtons('left');
+  $ionicConfigProvider.navBar.positionSecondaryButtons('right');
+  $ionicConfigProvider.form.checkbox('circle');
+});
 
