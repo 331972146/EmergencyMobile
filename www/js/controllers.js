@@ -660,8 +660,20 @@ angular.module('controllers', ['ionic','ngResource','services'])
   };
 
   $scope.goInjury = function() {
-    Storage.set("New", 1);
-    $scope.saveVisitInfo(); 
+    if( (Storage.get("VisitNo")!='') && (Storage.get("PatientID")!='')){
+       Storage.set("New", 1);
+       $state.go('injury');
+    }
+    else
+    {
+        $ionicLoading.show({
+           template: '请先保存就诊记录',
+           noBackdrop: false,
+           duration: 1000,
+           hideOnStateChange: true
+        });
+    }
+    
   };
   
   //获取推荐VID
@@ -732,7 +744,6 @@ angular.module('controllers', ['ionic','ngResource','services'])
                        duration: 700,
                       });
                       $timeout($scope.wirteToCard(),500);
-                      // $state.go('injury');
                   }
                 },function(err) {  
                    $ionicLoading.show({
@@ -746,7 +757,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
      
   //后送选择框         
     $scope.showreservePop = function() {
-      $scope.saveVisitInfo();
+      //$scope.saveVisitInfo();
       if( (Storage.get("VisitNo")!='') && (Storage.get("PatientID")!=''))
       {
             var myPopup = $ionicPopup.show({
