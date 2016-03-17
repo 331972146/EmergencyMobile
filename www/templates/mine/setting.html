@@ -19,18 +19,24 @@
           <i class="icon ion-location balanced"></i>位置<span class="item-note">{{myLocation}}</span>
         </a>
         <br>
-        <a class="item item-icon-left" href="#/myprofile">
+        <a class="item item-icon-left" href="#/ambulance/myprofile">
           <i class="icon ion-gear-a calm"></i>个人信息
         </a>
         <br>
-        <a class="item item-icon-left" href="#/setPassword">
+        <a class="item item-icon-left" href="#/ambulance/setPassword">
           <i class="icon ion-key assertive"></i>修改密码
         </a>
         <br>
         <a class="item item-icon-left" ng-click="logOutConfirm()">
           <i class="icon ion-log-out energized"></i>退出登录
         </a>        
-
+        <a class="item item-icon-left" ng-click="wirteToCard()">
+          <i class="icon ion-android-archive dark"></i>写入NFC(测试用)
+        </a>
+        <a class="item item-icon-left" ng-click="eraseCard()">
+          <i class="icon ion-android-alert dark"></i>
+          擦除NFC(测试用)
+        </a> 
  </div>
 
     </div>
