@@ -1342,6 +1342,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
     })
     Patients.GetEmergencyDictItems().then(
       function(s){
+        console.log(s);
          for(var i=0;i<s.length;i++)
          {
            $scope.catalog[s[i].Category] = s[i].Item;
@@ -1544,8 +1545,13 @@ angular.module('controllers', ['ionic','ngResource','services'])
             }
           }
         })
+        console.log($scope.emergencylevel);
+        if($scope.emergencylevel!=undefined)
+        {
+          postEmergencydata.postdata.push($scope.emergencylevel);
+        }
         // console.log(postVitalSigndata);
-        // console.log(postEmergencydata);
+        console.log(postEmergencydata);
         if(postVitalSigndata.postdata.length>0)
         {
           Patients.PostVitalSign(postVitalSigndata).then(
@@ -1694,13 +1700,53 @@ angular.module('controllers', ['ionic','ngResource','services'])
       // console.log(mindscoring);
       $scope.scoring = breathscoring+bp_hscoring+mindscoring;
       if($scope.scoring>=6&&$scope.scoring<=9)
-        $scope.scoring+=" 分 重伤-紧急处置";
+        {
+          $scope.scoring+=" 分 重伤-紧急处置";
+          $scope.emergencylevel = {
+            "ItemCategory":'InjuryExtent',
+            "ItemCode":3,
+            "ItemValue":'重伤-紧急处置',
+            "UserId":Userid,
+            "TerminalName":"sampleTerminalName",
+            "TerminalIP":"sampleTerminalIP"
+          }
+        }
       else if($scope.scoring>=10&&$scope.scoring<=11)
+       { 
         $scope.scoring+=" 分 中度伤-优先处置";
+          $scope.emergencylevel = {
+            "ItemCategory":'InjuryExtent',
+            "ItemCode":2,
+            "ItemValue":'中度伤-优先处置',
+            "UserId":Userid,
+            "TerminalName":"sampleTerminalName",
+            "TerminalIP":"sampleTerminalIP"
+          }
+      }
       else if($scope.scoring==12)
-        $scope.scoring+=" 分 轻伤-常规处置";
+        {
+          $scope.scoring+=" 分 轻伤-常规处置";
+          $scope.emergencylevel = {
+            "ItemCategory":'InjuryExtent',
+            "ItemCode":1,
+            "ItemValue":'轻伤-常规处置',
+            "UserId":Userid,
+            "TerminalName":"sampleTerminalName",
+            "TerminalIP":"sampleTerminalIP"
+          }
+        }
       else if($scope.scoring<=5)
-        $scope.scoring+=" 分 危重伤-期待处置";
+        {
+          $scope.scoring+=" 分 危重伤-期待处置";
+          $scope.emergencylevel = {
+            "ItemCategory":'InjuryExtent',
+            "ItemCode":4,
+            "ItemValue":'危重伤-期待处置',
+            "UserId":Userid,
+            "TerminalName":"sampleTerminalName",
+            "TerminalIP":"sampleTerminalIP"
+          }
+        }
     }
     $scope.showdescribe = function() {
       var showdescribe = $ionicPopup.alert({
