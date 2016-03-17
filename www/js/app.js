@@ -3,10 +3,12 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters'])
+angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordova','filters','directives'])
 
-.run(function($ionicPlatform, $rootScope, Storage, $state, nfcService, UserInfo) {
+.run(function($ionicPlatform, $rootScope,$ionicLoading,$state, Storage, UserInfo,nfcService) {
   $ionicPlatform.ready(function() {
+    console.log(window.localStorage);
+    Storage.rm('MY_LOCATION');
     //自动登录
     var userid=Storage.get('USERID');
     var passwd=Storage.get('PASSWD');
@@ -56,7 +58,8 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
     $rootScope.eraseCard=false;
     $rootScope.NFCmodefy=false;
     Storage.set('UUID',ionic.Platform.device().uuid);
-    Storage.rm('MY_LOCATION');
+    console.log(nfcService);
+    nfcService.start();  
   });
 })
 
@@ -145,20 +148,40 @@ angular.module('EmergencyMobile', ['ionic', 'services', 'controllers', 'ngCordov
         }
       }
     })
-    .state('myProfile',{
-      cache:false,
+    .state('ambulance.myProfile',{
+      cache: false,
       url: '/myprofile',
-      templateUrl: 'templates/mine/myProfile.html',
-      controller:'myProfileCtrl'
+      views:{
+       'mine':{
+          templateUrl: 'templates/mine/myProfile.html',
+          controller:'myProfileCtrl'
+        }
+      }
     })   
-    .state('setPassword', {
+    .state('ambulance.setPassword', {
       cache:false,
       url: '/setPassword',
-      templateUrl: 'templates/signIn/setPassword.html',
-      controller: 'SetPasswordCtrl'    
+      views:{
+       'mine':{
+          templateUrl: 'templates/signIn/setPassword.html',
+          controller: 'SetPasswordCtrl'
+        }
+      }      
     });
 
     //起始页
     $urlRouterProvider.otherwise('/signIn');
   }])
+
+// --------不同平台的相关设置----------------
+.config(function($ionicConfigProvider) {
+  $ionicConfigProvider.views.maxCache(3);
+  // note that you can also chain configs
+  $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.tabs.style('standard');
+  $ionicConfigProvider.navBar.alignTitle('center');
+  $ionicConfigProvider.navBar.positionPrimaryButtons('left');
+  $ionicConfigProvider.navBar.positionSecondaryButtons('right');
+  $ionicConfigProvider.form.checkbox('circle');
+});
 

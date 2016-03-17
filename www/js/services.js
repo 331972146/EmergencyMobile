@@ -670,7 +670,6 @@ return{
 //NFC XJZ
 .factory('nfcService', function ($rootScope, $ionicPlatform,$ionicPopup,$ionicLoading,$state,Storage) {
 
-    var tag = {};
     var openPop = function(){
       $ionicPopup.show({
         title: '<center>发现NFC卡片</center>',
@@ -682,7 +681,7 @@ return{
             text: '确定',
             type: 'button-assertive',
             onTap: function(e) {
-                $state.go('ambulance.mine');
+                $state.go('newPatient');
             }
           },{ text: '取消',
               type: 'button-calm',
@@ -698,12 +697,11 @@ return{
             $rootScope.recordToWrite='';
             $rootScope.NFCmodefy=false;
             $ionicLoading.hide();
-            $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:2000});
-            console.log("Wrote data to tag.");
+            $ionicLoading.show({template:'NFC卡片写入成功',noBackdrop:true,duration:1000});
+            $state.go('injury');
         }, 
         function (reason) {
             $ionicLoading.hide();
-            // $ionicLoading.show({template:'密码验证成功',noBackdrop:true,duration:2000});
             $ionicPopup.show({
               title: '<center>操作失败</center>',
               template: '请重新写入信息至NFC卡片',
@@ -723,12 +721,13 @@ return{
         }
       );
     }
-    $ionicPlatform.ready(function() {
+    var start = function() {
         nfc.addNdefListener(function (nfcEvent) {
             if(Storage.get('MY_LOCATION') == undefined){
               $ionicLoading.show({template:'请先登录，并提交位置',noBackdrop:true,duration:2000});
             }else if($rootScope.eraseCard == true){
               nfc.erase(function(){
+                $ionicLoading.hide();
                 $ionicLoading.show({template:'NFC卡片擦除成功',noBackdrop:true,duration:2000});
                 $rootScope.eraseCard=false;
               },function(){});
@@ -746,7 +745,7 @@ return{
                     //var visit=temp[1];
                     Storage.set('PatientID',temp[0]);
                     Storage.set('VisitNo',temp[1]);
-                    if(Storage.get('RoleCode') == EmergencyPersonnel) $state.go('visitInfo');
+                    if(Storage.get('RoleCode') == 'EmergencyPersonnel') $state.go('visitInfo');
                     else  $state.go('viewEmergency');
                     
                   }
@@ -770,18 +769,13 @@ return{
             }else if($rootScope.NFCmodefy && $rootScope.recordToWrite!=undefined && $rootScope.recordToWrite!=''){
               writeTag();
             }else{
-              var type = "",
-                  id = '',
-                  payload = "",
-                  record = ndef.record(ndef.TNF_MIME_MEDIA, type, id, payload);
-
+              var record = ndef.record(ndef.TNF_MIME_MEDIA, "", "", "");
               nfc.write(
                 [record], 
                 function () {
                   openPop();                       
                 }, 
                 function (reason) {
-                  //navigator.notification.alert(reason, function() {}, "There was a problem");
                   // console.log(reason);
                 }
               );              
@@ -791,10 +785,10 @@ return{
         }, function (reason) {
             alert("Error adding NFC Listener " + reason);
         });
-    });
+    }
 
     return {
-        // tag: tag
+      start,
     };
 })
 
