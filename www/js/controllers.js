@@ -1268,7 +1268,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
       firstdirs = {"height":"0","width":"0","top":"0","left":"0"},
       seconddirs = {"height":"0","width":"0","top":"0","left":"0"}//,
       // Preview = {"height":"0","width":"0","top":"0","left":"0"};
-      // console.log(scrollWidth);
+      console.log(scrollWidth);
     //计算四个模块的位置
     basicinfo.height = 100;
     basicinfo.top = 43;
@@ -1325,7 +1325,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
 
       VitalSignInfo.GetVitalSignInfos(patientID,visitNo).then(//获取已有信息
         function(s){
-          // console.log(s);
+          console.log(s);
           for(var i=0;i<s.length;i++)
           {
             $scope.catalog[s[i].ItemCategory][s[i].ItemCode-1].value = s[i].ItemValue;
@@ -1336,9 +1336,9 @@ angular.module('controllers', ['ionic','ngResource','services'])
         });
 
       $scope.itemdetail = $scope.catalog.Physical;
-      // console.log($scope.catalog);
+      console.log($scope.catalog);
     },function(e){
-      // console.log(e);
+      console.log(e);
     })
     Patients.GetEmergencyDictItems().then(
       function(s){
@@ -1348,7 +1348,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
          }
         EmergencyInfo.GetEmergencyInfos(patientID,visitNo).then(//获取已有信息
           function(s){
-            // console.log(s);
+            console.log(s);
             for(var i1=0;i1<s.length;i1++)
             {
               for(var i2=0;i2<s[i1].Item.length;i2++)
@@ -1360,11 +1360,11 @@ angular.module('controllers', ['ionic','ngResource','services'])
             }
           },
           function(e){
-            // console.log(e);
+            console.log(e);
         });
-        // console.log($scope.catalog);
+        console.log($scope.catalog);
      },function(e){
-        // console.log(e);
+        console.log(e);
     })
     $scope.onClickBackward = function(){
       $ionicHistory.goBack();
@@ -1404,7 +1404,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
     };
     $scope.lastchooseitem = 'Physical';//记录上一次选中的左侧目录信息，如 physiological
       $scope.chooseitem = function(ci){
-        // console.log(ci);
+        console.log(ci);
         if(ci!=$scope.lastchooseitem)//防止重复点击同一个目录
         {
           switch(ci)
@@ -1438,14 +1438,14 @@ angular.module('controllers', ['ionic','ngResource','services'])
         }     
       };
       $scope.onselectchange = function(ci){//每次选中或取消checkbox后调用，直接把值汇总
-        // console.log(ci);
+        console.log(ci);
         if(ci.ItemName=="其他")
         {
           $ionicScrollDelegate.$getByHandle('myhand').resize();
           //如果选的是其他则把页面滚到底部，方便显示输入框
           $ionicScrollDelegate.$getByHandle('myhand').scrollBottom(true);
         }
-        // console.log($scope.itemdetail);
+        console.log($scope.itemdetail);
         $scope.catalog[$scope.lastchooseitem]=$scope.itemdetail;
 
       }
@@ -1453,7 +1453,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
       {
         document.getElementById('mytext2').focus();//使通用输入框获得焦点
         $scope.inputindex = i;//存储输入框索引
-        // console.log(i);
+        console.log(i);
         if(i!=undefined)
           $scope.textarea2value = $scope.itemdetail[i].value;//通用输入框获得所选输入框的初始值
         else
@@ -1470,8 +1470,8 @@ angular.module('controllers', ['ionic','ngResource','services'])
       }
 
       $scope.loosecurse = function(){//通用输入框失去焦点时调用
-        // console.log('loosecurse');
-        // console.log($scope.lastchooseitem);
+        console.log('loosecurse');
+        console.log($scope.lastchooseitem);
         if($scope.inputindex!=undefined)//undefined表示通用输入框操作的是生理，生化参数输入界面
         {
           $scope.itemdetail[$scope.inputindex].value = $scope.textarea2value;//将通用输入框的值赋给所选输入框
@@ -1488,7 +1488,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
           ble.isEnabled(function(){
 
           }, function(){
-            // console.log("ble is not enabled");
+            console.log("ble is not enabled");
             $scope.ble_enable();
           });
         }
@@ -1510,7 +1510,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
       };
       $scope.saveall = function(){
 
-        // console.log($scope.catalog);
+        console.log($scope.catalog);
         postEmergencydata.postdata = [];
         postVitalSigndata.postdata = [];
         angular.forEach($scope.catalog,function(value,key){
@@ -1518,7 +1518,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
           {
             if(value[i].status)
             {
-              // console.log(key+value[i].ItemName);
+              console.log(key+value[i].ItemName);
               var selectResult={};
               selectResult["ItemCategory"] = key;
               selectResult["ItemCode"] = value[i].ItemCode;
@@ -1531,7 +1531,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
             }
             if(value[i].value!=''&&value[i].value!=undefined&&value[i].ItemName!='其他')
             {
-              // console.log(key+value[i].ItemName);
+              console.log(key+value[i].ItemName);
               var inputResult={};
               inputResult["ItemCategory"] = key;
               inputResult["ItemCode"] = value[i].ItemCode;
@@ -1544,41 +1544,37 @@ angular.module('controllers', ['ionic','ngResource','services'])
             }
           }
         })
-        // console.log(postVitalSigndata);
-        // console.log(postEmergencydata);
+        console.log(postVitalSigndata);
+        console.log(postEmergencydata);
         if(postVitalSigndata.postdata.length>0)
         {
           Patients.PostVitalSign(postVitalSigndata).then(
             function(s){
-            // console.log(s.result);
-            window.plugins.toast.showShortBottom('生理/生化信息保存成功');
+            console.log(s.result);
           },function(e){
-            // console.log(e);
-            window.plugins.toast.showShortBottom('生理/生化信息保存失败');
+            console.log(e);
           });
         }
         if(postEmergencydata.postdata.length>0)
         {
           Patients.PostEmergency(postEmergencydata).then(
             function(s){
-            // console.log(s.result);
-            window.plugins.toast.showShortBottom('急救信息保存成功');
+            console.log(s.result);
           },function(e){
-            // console.log(e);
-            window.plugins.toast.showShortBottom('急救信息保存失败');
+            console.log(e);
           });
         }
       }
       // A confirm dialog
     $scope.showConfirm = function() {
-      // console.log($scope.blescanlist);
+      console.log($scope.blescanlist);
       var confirmPopup = $ionicPopup.confirm({
         title: '选择设备',
         scope:$scope,
         template:'<ion-list><a class="item item-icon-right" href="#" ng-repeat="item in blescanlist"ng-click="selectbledevice($index)"><i class="icon ion-android-done" ng-if="item.showconnecticon"></i>{{item.name}}</a></ion-list>'
       }).then(function(res) {
         if(res) {
-          // console.log('You are sure');
+          console.log('You are sure');
           for(var i=0;i<$scope.blescanlist.length;i++)
           {
             if($scope.blescanlist[i].showconnecticon == true)
@@ -1587,70 +1583,19 @@ angular.module('controllers', ['ionic','ngResource','services'])
             }
           }
         } else {
-          // console.log('You are not sure');
+          console.log('You are not sure');
         }
       });
     };
     $scope.selectbledevice = function(index){
-      // console.log(index);
-      // console.log($scope.blescanlist);
+      console.log(index);
+      console.log($scope.blescanlist);
       for(var i=0;i<$scope.blescanlist.length;i++)
       {
         $scope.blescanlist[i].showconnecticon = false;
       }
       $scope.blescanlist[index].showconnecticon = true;
-      // console.log($scope.blescanlist);
-    }
-    $scope.showbluetoothConfirm = function() {//弹出生理设备选择提示框
-      $scope.bluetoothscanlist = [];
-      if(ionic.Platform.platform()!='win32')
-      {
-        bluetoothSerial.discoverUnpaired();
-        bluetoothSerial.setDeviceDiscoveredListener(function(device) {
-            $scope.bluetoothscanlist.push(device);
-            console.log($scope.bluetoothscanlist);
-        });
-      }
-      var confirmPopup = $ionicPopup.confirm({
-        title: '选择设备',
-        scope:$scope,
-        template:'<ion-list><a class="item item-icon-right" href="#" ng-repeat="item in bluetoothscanlist"ng-click="selectbluetoothdevice($index)"><i class="icon ion-android-done" ng-if="item.showconnecticon"></i>{{item.name}}</a></ion-list>'
-      }).then(function(res) {
-        if(res) {
-          $scope.bluetoothscanlist.forEach(function(value,key){
-            if(value.showconnecticon == true)
-              window.localStorage['bluetoothdevice'] = angular.toJson(value);//存储生理设备mac(相当于绑定设备)
-          })
-        } else {
-          // console.log('You are not sure');
-        }
-      });
-    };
-    $scope.selectbluetoothdevice = function(index){//保存选择的生理设备蓝牙信息
-      $scope.bluetoothscanlist.forEach(function(value,key){
-        if(key==index)
-          value.showconnecticon = true;
-        else
-          value.showconnecticon = false;
-      })
-    }
-    $scope.receivevdata = function(){//从生理设备获取数据
-      if(ionic.Platform.platform()!='win32')
-      {
-        var bluetoothdevice = angular.fromJson(window.localStorage['bluetoothdevice']);
-        bluetoothSerial.connect(bluetoothdevice.id,
-          function(s){
-            bluetoothSerial.subscribeRawData(
-              function(sd){
-                var bytes = new Uint8Array(sd);
-                console.log(bytes);
-              },function(ed){
-
-              });
-          }, function(e){
-
-          });
-      }
+      console.log($scope.blescanlist);
     }
     $scope.scoring = 0;
     var scoring = function()
@@ -1688,19 +1633,11 @@ angular.module('controllers', ['ionic','ngResource','services'])
         mindscoring = 3;
       else if($scope.catalog.Physical[7].value>=13&&$scope.catalog.Physical[7].value<=15)
         mindscoring = 4;
-      // console.log($scope.catalog);
-      // console.log(breathscoring);
-      // console.log(bp_hscoring);
-      // console.log(mindscoring);
+      console.log($scope.catalog);
+      console.log(breathscoring);
+      console.log(bp_hscoring);
+      console.log(mindscoring);
       $scope.scoring = breathscoring+bp_hscoring+mindscoring;
-      if($scope.scoring>=6&&$scope.scoring<=9)
-        $scope.scoring+=" 分 重伤-紧急处置";
-      else if($scope.scoring>=10&&$scope.scoring<=11)
-        $scope.scoring+=" 分 中度伤-优先处置";
-      else if($scope.scoring==12)
-        $scope.scoring+=" 分 轻伤-常规处置";
-      else if($scope.scoring<=5)
-        $scope.scoring+=" 分 危重伤-期待处置";
     }
     $scope.showdescribe = function() {
       var showdescribe = $ionicPopup.alert({
@@ -1712,12 +1649,12 @@ angular.module('controllers', ['ionic','ngResource','services'])
     $ionicPlatform.ready(function(){
     if(ionic.Platform.platform()!='win32')
     {
-      // console.log(ionic.Platform.platform());
+      console.log(ionic.Platform.platform());
 
-      // console.log($scope.datafromdevice);
+      console.log($scope.datafromdevice);
       $scope.blescanlist = [];
       ble.startScan([], function(success){
-          // console.log('ble-success');
+          console.log('ble-success');
           $rootScope.$apply(function(){
             var hashavedevice = false;
             for(var i=0;i<$scope.blescanlist.length;i++)
@@ -1733,43 +1670,43 @@ angular.module('controllers', ['ionic','ngResource','services'])
               $scope.blescanlist[length-1].showconnecticon = false;
             }
           });
-          // console.log($scope.blescanlist);
+          console.log($scope.blescanlist);
         }, function(err){
-          // console.log(err);
+          console.log(err);
     });
     $scope.ble_connect = function(index){
       var device_id = $scope.blescanlist[index].id;
-      // console.log(device_id);
+      console.log(device_id);
       ble.connect(device_id, function(connectSuccess){
 
         window.localStorage['blemac'] = angular.toJson(connectSuccess);//angular.fromJson()
         $rootScope.$apply(function(){
           $scope.bindble = connectSuccess.name;
                 });
-                // console.log($scope.blescanlist);
+                console.log($scope.blescanlist);
       }, function(connectFailure){
         $rootScope.$apply(function(){
           $scope.bindble = '绑定失败';
-          // console.log(index);
-          // console.log($scope.blescanlist[index].showconnecticon)
+          console.log(index);
+          console.log($scope.blescanlist[index].showconnecticon)
           $scope.blescanlist[index].showconnecticon = false;
                 });
-                // console.log($scope.blescanlist);
+                console.log($scope.blescanlist);
       });
     };
     $scope.ble_disconnect = function(device_id){
       ble.disconnect(device_id, function(disconnectSuccess){
-        // console.log(disconnectSuccess);
+        console.log(disconnectSuccess);
       }, function(disconnectfailure){
-        // console.log(disconnectfailure);
+        console.log(disconnectfailure);
       });
     }
     $scope.ble_enable = function(){
       ble.enable(function(enablesuccess){
-        // console.log('enablesuccess');
+        console.log('enablesuccess');
 
           ble.startScan([], function(success){
-          // console.log('ble-success');
+          console.log('ble-success');
           $rootScope.$apply(function(){
               var hashavedevice = false;
               for(var i=0;i<$scope.blescanlist.length;i++)
@@ -1785,51 +1722,51 @@ angular.module('controllers', ['ionic','ngResource','services'])
                 $scope.blescanlist[length-1].showconnecticon = false;
               }
           });
-          // console.log($scope.blescanlist);
+          console.log($scope.blescanlist);
         }, function(err){
-          // console.log(err);
+          console.log(err);
         });
         $rootScope.$apply(function(){
           $scope.bleisdisabled = false;
                 });
       }, function(enablefailure){
-        // console.log(enablefailure);
+        console.log(enablefailure);
       });
     };
   } 
   })
   $scope.starttimesync = function(){
-    // console.log('clickstarttimesync');
+    console.log('clickstarttimesync');
     var bledevice = angular.fromJson(window.localStorage['blemac']);
     ble.connect(bledevice.id, function(connectSuccess){
-      // console.log(connectSuccess);
+      console.log(connectSuccess);
       ble_startNotification();
       $scope.step = 0;
       ble_write($scope.step);
     }, function(connectFailure){
-      // console.log(connectFailure);
+      console.log(connectFailure);
     });
   }
   $scope.receivecurrentdata = function(){
-    // console.log('clickreceivecurrentdata');
+    console.log('clickreceivecurrentdata');
     $scope.datafromdevice = new Uint8Array(0);
     var bledevice = angular.fromJson(window.localStorage['blemac']);
     ble.connect(bledevice.id, function(connectSuccess){
-      // console.log(connectSuccess);
+      console.log(connectSuccess);
       ble_startNotification();
       $scope.step = 2;
       ble_write($scope.step);
     }, function(connectFailure){
-      // console.log(connectFailure);
+      console.log(connectFailure);
     });
   }
   var ble_startNotification = function(){
     var bledevice = angular.fromJson(window.localStorage['blemac']);
     ble.startNotification(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic,function(buffer){
-        // console.log('readsuccess');
+        console.log('readsuccess');
         var data = new Uint8Array(buffer);
-        // console.log(data);
-        // console.log(data.length);
+        console.log(data);
+        console.log(data.length);
 
 
         if(data.length == 4)
@@ -1850,7 +1787,7 @@ angular.module('controllers', ['ionic','ngResource','services'])
         }else{
           //此处判断接收的数据信息是否正确，正确则发送ble_write(3);mastercomputerrespond指令并取消监听完成获取数据
           $rootScope.$apply(function(){
-            // console.log($scope.step);
+            console.log($scope.step);
             if($scope.step==2)
             {
               var c = new Uint8Array($scope.datafromdevice.length+data.length);
@@ -1863,19 +1800,19 @@ angular.module('controllers', ['ionic','ngResource','services'])
                   $scope.step++;
                   ble_write($scope.step);
                   ble.stopNotification(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic,
-                    function(){/*console.log("stopNotifications");*/},
-                    function(){/*console.log("stopNotificatione");*/});
+                    function(){console.log("stopNotifications");},
+                    function(){console.log("stopNotificatione");});
                 },2000);
               }
-              // console.log($scope.datafromdevice); 
+              console.log($scope.datafromdevice); 
             }else{
               //此处应该取消监听
             }
                   });
         }
       },function(err){
-        // console.log('readerr');
-        // console.log(err);
+        console.log('readerr');
+        console.log(err);
         $rootScope.$apply(function(){
           $scope.step = 0;
           ble_write(0);
@@ -1890,39 +1827,39 @@ angular.module('controllers', ['ionic','ngResource','services'])
         case 0://时间同步命令
           ble.writeWithoutResponse(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic, bleService.timesynccommand(),
             function(s){
-              // console.log('timesynccommandsuccess');
-              // console.log(s);
+              console.log('timesynccommandsuccess');
+              console.log(s);
             },
             function(err){
-              // console.log(err);
+              console.log(err);
             });
           break;
         case 1://发送时间数据
           ble.writeWithoutResponse(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic, bleService.timesyncdata(),
             function(){
-              // console.log('timesyncdatasuccess');
-              // console.log(new Uint8Array(bleService.timesyncdata()));
+              console.log('timesyncdatasuccess');
+              console.log(new Uint8Array(bleService.timesyncdata()));
             },
             function(err){
-              // console.log(err);
+              console.log(err);
             });
           break;
         case 2://发送单次数据传送命令
           ble.writeWithoutResponse(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic, bleService.currentdatacommand(),
             function(){
-              // console.log('currentdatacommandsuccess');
+              console.log('currentdatacommandsuccess');
             },
             function(err){
-              // console.log(err);
+              console.log(err);
             });
           break;
         case 3://返回接收数据成功
           ble.writeWithoutResponse(bledevice.id, bledevice.services[2], bledevice.characteristics[6].characteristic, bleService.mastercomputerrespond(),
             function(){
-              // console.log('mastercomputerrespondsuccess');
+              console.log('mastercomputerrespondsuccess');
             },
             function(err){
-              // console.log(err);
+              console.log(err);
             });
           break;
       }
